@@ -1,6 +1,7 @@
-from django.shortcuts import HttpResponse
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
-# Create your views here.
+@login_required(login_url='/login')
 def index(request):
     """Welcome page."""
-    return HttpResponse('Welcome!')
+    return render(request, 'home_page.html')
