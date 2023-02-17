@@ -1,0 +1,90 @@
+h1 {
+    text-align: center;
+    font-size: 36px;
+    margin-bottom: 50px;
+}
+
+a {
+    margin-right: 10px;
+}
+
+.btn-create {
+    background-color: #33adff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.btn-danger {
+    background-color: #ff3333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+body {
+    background-color: #f2f2f2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wrapper {
+    border: 3px solid lightgray;
+    border-radius: 3rem;
+    padding: 0 4.5rem;
+    width: 42rem;
+}
+
+.movie-entry {
+    display: flex;
+    align-content: center;
+    align-items: center;
+    gap: 2rem;
+    justify-content: space-between;
+    border-top: 2px solid lightgray;
+}
+
+.details {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.actions a {
+    text-decoration: none;
+}
+
+.header {
+    padding: 2rem;
+}
+
+.details a {
+    text-decoration: none;
+    color: rgb(80, 80, 80);
+    border: 1px solid rgb(80, 80, 80);
+    border-radius: 2px;
+    padding: 2px;
+}
