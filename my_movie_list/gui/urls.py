@@ -3,20 +3,33 @@ from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
-
-    path('', auth_views.LoginView.as_view(
-        template_name='login.html'), name='login'),
-    path('movie_list/', views.movie_list, name='movie_list'),
+    path('', auth_views.LoginView.as_view(), name='login'),
+    path('home/', views.home, name='home'),
+    path('login/', auth_views.LoginView.as_view(), name='login2'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('register/', views.register, name='register'),
 
-    path('<int:pk>/', views.movie_list_detail, name='movie_list_detail'),
-    path('create/', views.create_movie_list, name='create_movie_list'),
-    path('<int:pk>/create/', views.create_movie, name='create_movie'),
-    path('lists/', views.movie_list, name='movie_list'),
-    path('<int:pk>/delete/', views.delete_movie_list, name='delete_movie_list'),
-    path('<int:pk>/delete/<int:movie_pk>/',
-         views.delete_movie, name='delete_movie'),
-    path('<int:pk>/edit/<int:movie_pk>/', views.edit_movie, name='edit_movie'),
+    path('movies/<int:pk>/', views.movie_detail, name='movie_detail'),
+    path('movies/<int:pk>/add-to-watched/',
+         views.add_movie_to_watched, name='add_movie_to_watched'),
+    path('movies/<int:pk>/add-to-plan-to-watch/',
+         views.add_movie_to_plan_to_watch, name='add_movie_to_plan_to_watch'),
+    path('movies/<int:pk>/remove-from-watched/',
+         views.remove_movie_from_watched, name='remove_movie_from_watched'),
+    path('movies/<int:pk>/remove-from-plan-to-watch/',
+         views.remove_movie_from_plan_to_watch, name='remove_movie_from_plan_to_watch'),
 
+
+    path('series/<int:pk>/', views.series_detail, name='series_detail'),
+    path('series/<int:pk>/add-to-watched/',
+         views.add_series_to_watched, name='add_series_to_watched'),
+    path('series/<int:pk>/add-to-plan-to-watch/',
+         views.add_series_to_plan_to_watch, name='add_series_to_plan_to_watch'),
+    path('series/<int:pk>/remove-from-watched/',
+         views.remove_series_from_watched, name='remove_series_from_watched'),
+    path('series/<int:pk>/remove-from-plan-to-watch/',
+         views.remove_series_from_plan_to_watch, name='remove_series_from_plan_to_watch'),
+
+
+    path('search/', views.search, name='search'),
 ]

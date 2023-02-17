@@ -1,9 +1,10 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login as auth_login
 from django.contrib.auth.decorators import login_required
-from .forms import MovieListForm, MovieForm
-from .models import MovieList, Movie
+from .models import Movie, Series, UserProfile
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from django.db.models import Q
 
 
 def register(request):
@@ -11,85 +12,147 @@ def register(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            auth_login(request, user)
-            return redirect('movie_list')
+            profile = UserProfile(user=user)
+            profile.save()
+            return redirect('login')
     else:
         form = UserCreationForm()
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'registration/register.html', {'form': form})
 
 
-@login_required
-def movie_list(request):
-    movie_lists = MovieList.objects.filter(user=request.user)
-    return render(request, 'movie_list.html', {'movie_lists': movie_lists})
-
-
-@login_required
-def movie_list_detail(request, pk):
-    movie_list = MovieList.objects.get(pk=pk)
-    movies = movie_list.movie_set.all()
-    return render(request, 'movie_list_detail.html', {'movie_list': movie_list, 'movies': movies})
-
-
-@login_required
-def create_movie_list(request):
+def login(request):
     if request.method == 'POST':
-        form = MovieListForm(request.POST)
-        if form.is_valid():
-            movie_list = form.save(commit=False)
-            movie_list.user = request.user
-            movie_list.save()
-            return redirect('movie_list')
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.error(request, 'Invalid username or password')
+    return render(request, 'login.html')
+
+
+@login_required
+def home(request):
+    query = request.GET.get('q', '')
+    if query:
+        movies = Movie.objects.filter(Q(title__icontains=query))
+        series = Series.objects.filter(Q(title__icontains=query))
+        return render(request, 'search_results.html', {'movies': movies, 'series': series, 'query': query})
     else:
-        form = MovieListForm()
-    return render(request, 'create_movie_list.html', {'form': form})
+        user_profile = None
+        if hasattr(request.user, 'userprofile'):
+            user_profile = request.user.userprofile
+        watched_movies = user_profile.movies_watched.all() if user_profile else []
+        plan_to_watch_movies = user_profile.movies_plan_to_watch.all() if user_profile else []
+        watched_series = user_profile.series_watched.all() if user_profile else []
+        plan_to_watch_series = user_profile.series_plan_to_watch.all() if user_profile else []
+        return render(request, 'home.html', {'watched_movies': watched_movies, 'plan_to_watch_movies': plan_to_watch_movies, 'watched_series': watched_series, 'plan_to_watch_series': plan_to_watch_series})
 
 
 @login_required
-def create_movie(request, pk):
-    movie_list = get_object_or_404(MovieList, pk=pk, user=request.user)
-    if request.method == 'POST':
-        form = MovieForm(request.POST)
-        if form.is_valid():
-            movie = form.save(commit=False)
-            movie.movie_list = movie_list
-            movie.save()
-            return redirect('movie_list_detail', pk=pk)
+def movie_detail(request, pk):
+    movie = get_object_or_404(Movie, pk=pk)
+    return render(request, 'movie_detail.html', {'movie': movie})
+
+
+@login_required
+def series_detail(request, pk):
+    series = get_object_or_404(Series, pk=pk)
+    return render(request, 'series_detail.html', {'series': series})
+
+
+@login_required
+def add_movie_to_watched(request, pk):
+    movie = get_object_or_404(Movie, pk=pk)
+    user_profile = request.user.userprofile
+    user_profile.movies_plan_to_watch.remove(movie)
+    user_profile.movies_watched.add(movie)
+    messages.success(
+        request, f"{movie.title} has been added to your watched list.")
+    return redirect('home')
+
+
+@login_required
+def add_movie_to_plan_to_watch(request, pk):
+    movie = get_object_or_404(Movie, pk=pk)
+    user_profile = request.user.userprofile
+    user_profile.movies_watched.remove(movie)
+    user_profile.movies_plan_to_watch.add(movie)
+    messages.success(
+        request, f"{movie.title} has been added to your plan to watch list.")
+    return redirect('home')
+
+
+@login_required
+def add_series_to_watched(request, pk):
+    series = get_object_or_404(Series, pk=pk)
+    user_profile = request.user.userprofile
+    user_profile.series_plan_to_watch.remove(series)
+    user_profile.series_watched.add(series)
+    messages.success(
+        request, f"{series.title} has been added to your watched list.")
+    return redirect('home')
+
+
+@login_required
+def add_series_to_plan_to_watch(request, pk):
+    series = get_object_or_404(Series, pk=pk)
+    user_profile = request.user.userprofile
+    user_profile.series_watched.remove(series)
+    user_profile.series_plan_to_watch.add(series)
+    messages.success(
+        request, f"{series.title} has been added to your plan to watch list.")
+    return redirect('home')
+
+
+@login_required
+def search(request):
+    if request.method == 'GET' and 'q' in request.GET:
+        query = request.GET.get('q', '')
+        movies = Movie.objects.filter(Q(title__icontains=query))
+        series = Series.objects.filter(Q(title__icontains=query))
+        return render(request, 'search_results.html', {'movies': movies, 'series': series, 'query': query})
     else:
-        form = MovieForm()
-    return render(request, 'create_movie.html', {'form': form})
+        return redirect('home')
 
 
 @login_required
-def delete_movie(request, pk, movie_pk):
-    movie = get_object_or_404(Movie, pk=movie_pk)
-    if movie.movie_list.user == request.user:
-        movie.delete()
-    return redirect('movie_list_detail', pk=pk)
+def remove_movie_from_watched(request, pk):
+    movie = get_object_or_404(Movie, pk=pk)
+    user_profile = request.user.userprofile
+    user_profile.movies_watched.remove(movie)
+    messages.success(
+        request, f"{movie.title} has been removed from your watched list.")
+    return redirect('home')
 
 
 @login_required
-def delete_movie_list(request, pk):
-    movie_list = get_object_or_404(MovieList, pk=pk, user=request.user)
-    if request.method == 'POST':
-        movie_list.delete()
-        return redirect('movie_list')
-    return render(request, 'delete_movie_list.html', {'movie_list': movie_list})
+def remove_movie_from_plan_to_watch(request, pk):
+    movie = get_object_or_404(Movie, pk=pk)
+    user_profile = request.user.userprofile
+    user_profile.movies_plan_to_watch.remove(movie)
+    messages.success(
+        request, f"{movie.title} has been removed from your plan to watch list.")
+    return redirect('home')
 
 
 @login_required
-def edit_movie(request, pk, movie_pk):
-    movie = get_object_or_404(Movie, pk=movie_pk)
+def remove_series_from_watched(request, pk):
+    series = get_object_or_404(Series, pk=pk)
+    user_profile = request.user.userprofile
+    user_profile.series_watched.remove(series)
+    messages.success(
+        request, f"{series.title} has been removed from your watched list.")
+    return redirect('home')
 
-    if movie.movie_list.user != request.user:
-        return redirect('movie_list_detail', pk=pk)
 
-    if request.method == 'POST':
-        form = MovieForm(request.POST, instance=movie)
-        if form.is_valid():
-            form.save()
-            return redirect('movie_list_detail', pk=pk)
-    else:
-        form = MovieForm(instance=movie)
-
-    return render(request, 'edit_movie.html', {'form': form})
+@login_required
+def remove_series_from_plan_to_watch(request, pk):
+    series = get_object_or_404(Series, pk=pk)
+    user_profile = request.user.userprofile
+    user_profile.series_plan_to_watch.remove(series)
+    messages.success(
+        request, f"{series.title} has been removed from your plan to watch list.")
+    return redirect('home')
