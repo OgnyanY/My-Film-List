@@ -20,7 +20,7 @@ def register(request):
 
 @login_required
 def movie_list(request):
-    movie_lists = MovieList.objects.all()
+    movie_lists = MovieList.objects.filter(user=request.user)
     return render(request, 'movie_list.html', {'movie_lists': movie_lists})
 
 
@@ -36,7 +36,9 @@ def create_movie_list(request):
     if request.method == 'POST':
         form = MovieListForm(request.POST)
         if form.is_valid():
-            form.save()
+            movie_list = form.save(commit=False)
+            movie_list.user = request.user
+            movie_list.save()
             return redirect('movie_list')
     else:
         form = MovieListForm()
@@ -45,7 +47,7 @@ def create_movie_list(request):
 
 @login_required
 def create_movie(request, pk):
-    movie_list = MovieList.objects.get(pk=pk)
+    movie_list = get_object_or_404(MovieList, pk=pk, user=request.user)
     if request.method == 'POST':
         form = MovieForm(request.POST)
         if form.is_valid():
@@ -60,14 +62,15 @@ def create_movie(request, pk):
 
 @login_required
 def delete_movie(request, pk, movie_pk):
-    movie = Movie.objects.get(pk=movie_pk)
-    movie.delete()
+    movie = get_object_or_404(Movie, pk=movie_pk)
+    if movie.movie_list.user == request.user:
+        movie.delete()
     return redirect('movie_list_detail', pk=pk)
 
 
 @login_required
 def delete_movie_list(request, pk):
-    movie_list = MovieList.objects.get(pk=pk)
+    movie_list = get_object_or_404(MovieList, pk=pk, user=request.user)
     if request.method == 'POST':
         movie_list.delete()
         return redirect('movie_list')
@@ -77,6 +80,9 @@ def delete_movie_list(request, pk):
 @login_required
 def edit_movie(request, pk, movie_pk):
     movie = get_object_or_404(Movie, pk=movie_pk)
+
+    if movie.movie_list.user != request.user:
+        return redirect('movie_list_detail', pk=pk)
 
     if request.method == 'POST':
         form = MovieForm(request.POST, instance=movie)
