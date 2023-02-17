@@ -1,0 +1,40 @@
+{% load static %}
+<html>
+
+<head>
+  <title>My Movie list</title>
+  <link rel="stylesheet" href="{% static 'movie_series_detail.css' %}" />
+  <link rel="icon" href="{% static 'logo.png' %}" type="image/png">
+</head>
+
+<body>
+  <div class="wrapper">
+    {% block content %}
+    <div class="info">
+      <h1>{{ series.title }}</h1>
+      <p>{{ series.description }}</p>
+      <p>Rating: {{ series.rating }}</p>
+      <p>Year of release: {{ series.year_release }}</p>
+      <p>Year of completion: {{ series.year_completion }}</p>
+      <p>Status: {{ series.status }}</p>
+    </div>
+
+    <div class="forms">
+      <form method="post" action="{% url 'add_series_to_watched' series.pk %}">
+        {% csrf_token %}
+        <button type="submit">Add to watched list</button>
+      </form>
+
+      <form method="post" action="{% url 'add_series_to_plan_to_watch' series.pk %}">
+        {% csrf_token %}
+        <button type="submit">Add to plan to watch list</button>
+      </form>
+    </div>
+
+    <p><a href="{% url 'home' %}">Go back to the home page.</a></p>
+    {% endblock %}
+  </div>
+
+</body>
+
+</html>

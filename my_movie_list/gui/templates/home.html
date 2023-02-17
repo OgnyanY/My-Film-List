@@ -1,0 +1,106 @@
+{% load static %}
+
+<html>
+
+<head>
+  <title>My Movie list</title>
+  <link rel="stylesheet" href="{% static 'home.css' %}" />
+  <link rel="icon" href="{% static 'logo.png' %}" type="image/png">
+</head>
+
+<body>
+  <div class="wrapper">
+    {% block content %}
+    <h1>Welcome to Movie List App</h1>
+
+    <div class="list">
+      <h2>Watched Movies:</h2>
+      {% if watched_movies %}
+      <ul class="items">
+        {% for movie in watched_movies %}
+        <li>
+          <a href="{% url 'movie_detail' movie.pk %}">{{ movie.title }}</a>
+          <form method="post" action="{% url 'remove_movie_from_watched' movie.pk %}">
+            {% csrf_token %}
+            <button type="submit">Remove</button>
+          </form>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p>No movies watched yet.</p>
+      {% endif %}
+    </div>
+
+    <div class="list">
+      <h2>Plan to Watch Movies:</h2>
+      {% if plan_to_watch_movies %}
+      <ul class="items">
+        {% for movie in plan_to_watch_movies %}
+        <li>
+          <a href="{% url 'movie_detail' movie.pk %}">{{ movie.title }}</a>
+          <form method="post" action="{% url 'remove_movie_from_plan_to_watch' movie.pk %}">
+            {% csrf_token %}
+            <button type="submit">Remove</button>
+          </form>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p>No movies in plan to watch list yet.</p>
+      {% endif %}
+    </div>
+
+    <div class="list">
+      <h2>Watched Series:</h2>
+      {% if watched_series %}
+      <ul class="items">
+        {% for series in watched_series %}
+        <li>
+          <a href="{% url 'series_detail' series.pk %}">{{ series.title }}</a>
+          <form method="post" action="{% url 'remove_series_from_watched' series.pk %}">
+            {% csrf_token %}
+            <button type="submit">Remove</button>
+          </form>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p>No series watched yet.</p>
+      {% endif %}
+    </div>
+
+    <div class="list">
+      <h2>Plan to Watch Series:</h2>
+      {% if plan_to_watch_series %}
+      <ul class="items">
+        {% for series in plan_to_watch_series %}
+        <li>
+          <a href="{% url 'series_detail' series.pk %}">{{ series.title }}</a>
+          <form method="post" action="{% url 'remove_series_from_plan_to_watch' series.pk %}">
+            {% csrf_token %}
+            <button type="submit">Remove</button>
+          </form>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p>No series in plan to watch list yet.</p>
+      {% endif %}
+    </div>
+
+    <div class="search">
+      <h1>Search</h1>
+      <form class="search-form" action="{% url 'search' %}">
+        <input type="text" name="q" placeholder="Search movies and series...">
+        <button type="submit">Search</button>
+      </form>
+    </div>
+
+    <a class="logout" href="{% url 'logout' %}">Logout</a>
+
+    {% endblock %}
+  </div>
+</body>
+
+</html>
