@@ -1,0 +1,28 @@
+{% load static %}
+<html>
+
+<head>
+  <title>My Movie list</title>
+  <link rel="stylesheet" href="{% static 'movie_list.css' %}" />
+</head>
+
+<body>
+  <div class="wrapper">
+    <h1>Movie Lists</h1>
+    <div class="create">
+      <a href="{% url 'create_movie_list' %}">Create Movie List</a>
+    </div>
+
+    {% for movie_list in movie_lists %}
+    <div class="list">
+      <h2>{{ movie_list.name }}</h2>
+      <a href="{% url 'movie_list_detail' movie_list.pk %}">View Details</a>
+    </div>
+    {% endfor %}
+    <a href="{% url 'logout' %}">Logout</a>
+
+  </div>
+
+</body>
+
+</html>

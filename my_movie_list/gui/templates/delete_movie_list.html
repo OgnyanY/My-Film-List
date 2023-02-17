@@ -1,0 +1,22 @@
+{% load static %}
+<html>
+
+<head>
+    <title>My Movie list</title>
+    <link rel="stylesheet" href="{% static 'delete_movie_list.css' %}" />
+</head>
+
+<body>
+    {% block content %}
+    <div class="wrapper">
+        <h2>Are you sure you want to delete the movie list "{{ movie_list.name }}"?</h2>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete</button>
+            <a class="btn btn-secondary" href="{% url 'movie_list' %}">Cancel</a>
+        </form>
+    </div>
+    {% endblock %}
+</body>
+
+</html>

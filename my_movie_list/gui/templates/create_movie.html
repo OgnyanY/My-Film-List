@@ -1,0 +1,19 @@
+{% load static %}
+<html>
+
+<head>
+    <title>My Movie list</title>
+    <link rel="stylesheet" href="{% static 'create_movie.css' %}" />
+</head>
+
+<body>
+    <h1>Create Movie</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+</body>
+
+</html>
