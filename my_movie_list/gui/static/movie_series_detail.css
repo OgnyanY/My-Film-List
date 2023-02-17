@@ -19,14 +19,14 @@ body {
     width: 42rem;
 }
 
-.forms{
+.forms {
     display: flex;
     flex-direction: row;
     gap: 1rem;
 }
 
 
-.info{
+.info {
     display: flex;
     flex-direction: column;
     align-content: center;
@@ -37,7 +37,7 @@ body {
     padding: 2rem;
 }
 
-a{
+a {
     text-decoration: none;
     color: #4CAF50;
 

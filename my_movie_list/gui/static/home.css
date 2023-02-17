@@ -40,7 +40,7 @@ body {
     width: 42rem;
 }
 
-.items{
+.items {
     list-style: none;
     display: flex;
     flex-direction: column;
@@ -48,14 +48,15 @@ body {
     justify-content: center;
 }
 
-.items li{
+.items li {
     display: flex;
     align-content: center;
     align-items: center;
     justify-content: center;
     width: 600;
 }
-.items button{
+
+.items button {
     margin-top: 1rem;
 }
 
@@ -63,18 +64,18 @@ body {
     border-top: 3px solid lightgray;
 }
 
-.list:last-of-type{
+.list:last-of-type {
     border-bottom: 3px solid lightgray;
 }
 
-.search{
+.search {
     border-top: 3px solid lightgray;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-p{
+p {
     display: flex;
     justify-content: center
 }

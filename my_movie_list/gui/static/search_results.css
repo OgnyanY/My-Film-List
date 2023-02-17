@@ -23,18 +23,19 @@ body {
     justify-content: center;
 }
 
-.items{
+.items {
     display: flex;
     flex-direction: row;
     align-content: center;
     justify-content: center;
     align-items: center;
     border-top: 3px solid lightgrey;
-    border-bottom: 3px solid lightgrey;;
+    border-bottom: 3px solid lightgrey;
+    ;
     width: 100%;
 }
 
-.items:last-of-type{
+.items:last-of-type {
     border-top: 3px solid lightgrey;
 }
 
@@ -42,12 +43,12 @@ body {
     padding: 2rem;
 }
 
-a{
+a {
     text-decoration: none;
     color: #4CAF50;
 
 }
 
-ul{
-    list-style:square
+ul {
+    list-style: square
 }
