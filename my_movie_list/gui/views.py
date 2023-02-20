@@ -28,7 +28,9 @@ def home(request):
     plan_to_watch_movies = user_profile.movies_plan_to_watch.all() if user_profile else []
     watched_series = user_profile.series_watched.all() if user_profile else []
     plan_to_watch_series = user_profile.series_plan_to_watch.all() if user_profile else []
-    return render(request, 'home.html', {'watched_movies': watched_movies, 'plan_to_watch_movies': plan_to_watch_movies, 'watched_series': watched_series, 'plan_to_watch_series': plan_to_watch_series})
+    return render(request, 'home.html',
+                  {'watched_movies': watched_movies, 'plan_to_watch_movies': plan_to_watch_movies,
+                   'watched_series': watched_series, 'plan_to_watch_series': plan_to_watch_series})
 
 
 @login_required
